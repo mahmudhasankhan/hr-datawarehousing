@@ -37,14 +37,14 @@ A warehouse provides the required resources, such as CPU, memory, and temporary 
 A view is a defined query that sits on top of a table. Unlike a table, it doesn't store the actual data. It always contains the latest data because it reruns every time it is queried. Whereas a table is only as fresh as the last time it was created or updated, no matter when you query it.
 
 Run the following commands in your snowflake sql worksheet
-```
+```sql
 USE ROLE ACCOUNTADMIN;
 
 CREATE WAREHOUSE hr_wh WITH warehouse_size='x-small';
 
-CREATE DATABASE hr_db;
+CREATE DATABASE IF NOT EXISTS hr_db;
 
-CREATE ROLE hr_admin_role;
+CREATE ROLE IF NOT EXISTS hr_admin_role;
 
 SHOW GRANTS ON WAREHOUSE hr_wh;
 
@@ -61,7 +61,9 @@ CREATE SCHEMA hr_db.hr_schema;
 
 -- to drop your database and warehouse
 use role accountadmin;
-drop warehouse hr_wh;
-drop database hr_db;
-drop role hr_admin_role;
+drop IF EXISTS warehouse hr_wh;
+drop IF EXISTS database hr_db;
+drop role IF EXISTS hr_admin_role;
 ```
+
+
