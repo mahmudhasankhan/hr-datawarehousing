@@ -9,7 +9,30 @@ Extract Data from source server (sql server), load data in Snowflake (as staging
 
 Lastly visualize the data model with PowerBI.
 
+We have a lot of moving parts here and **airflow** is gonna help us hook everything together into one unit
+
 ## Project Setup:
+
+### Setup SQL Server with Airflow
+
+Prerequisites:
+- sql server
+- astro cli
+
+Use astro cli to spin up an airflow environment. 
+```
+astro dev init
+```
+create a .env file and define your environment variables required for connecting SQL server with pyodbc 
+```
+# MSSQL env variables
+SERVER=
+USER=
+PASSWORD=
+DATABASE=
+
+```
+
 
 ### Install dbt
 
