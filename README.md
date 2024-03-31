@@ -32,8 +32,19 @@ PASSWORD=
 DATABASE=
 
 ```
+Connection configurations of ODBC for airflow
 
-
+```
+Connection id = mssql_default
+Connection Type = ODBC
+Host = server ip
+Schema = dbo
+Login = username
+Password = ****
+Port = 1433
+Extra = {"Driver": "ODBC Driver 18 for SQL Server", "ApplicationIntent": "ReadOnly", "TrustedConnection": "Yes", "connect_kwargs": {"autocommit": false, "ansi": true}}
+```
+Snowflake Connections 
 ### Install dbt
 
 You need to install dbt-core and dbt-snowflake adapter in your local machine.
