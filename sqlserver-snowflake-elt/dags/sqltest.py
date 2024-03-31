@@ -1,7 +1,4 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.decorators import task, dag
-import time
 from datetime import datetime, timedelta
 import pyodbc
 import os
@@ -12,6 +9,11 @@ default_args = {
 }
 
 _ = load_dotenv(find_dotenv())
+
+SERVER = os.environ["SERVER"]
+DATABASE = os.environ["DATABASE"]
+USERNAME = os.environ["USER"]
+PASSWORD = os.environ["PASSWORD"]
 
 
 @dag(
@@ -25,19 +27,20 @@ def my_dag():
 
     @task(task_id='testsql')
     def test_sql():
-        server = os.environ["SERVER"]
-        username = os.environ["USER"]
-        password = os.environ["PASSWORD"]
-        database = os.environ["DATABASE"]
-        ddw_connection = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server +
-                                        ';DATABASE='+database+';UID='+username+';PWD=' + password+';TrustServerCertificate=yes;')
-        query1 = "select top(10) from attendance"
-        print(f"Running query: {query1}")
-        print(f"Connection String: {ddw_connection}")
-        cursor = ddw_connection.cursor()
-        queryresult = cursor.execute(query1)
-   # database_names    = [db.ddw_databasename for db in databases_to_sync]
-        print(queryresult)
+        # Create a connection string variable using string interpolation.
+        connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};TrustServerCertificate=yes;'
+        # Use the pyodbc.connect function to connect to an SQL database.
+        conn = pyodbc.connect(connectionString)
+        SQL_QUERY = """
+        SELECT TOP(100) *
+        FROM
+        ATTENDANCE
+        ORDER BY authDateTime DESC
+        """
+        # Use cursor.execute to retrieve a result set from a query against the database.
+        cursor = conn.cursor()
+        for row in cursor.execute(SQL_QUERY):
+            print(f"{row.serialNo} | {row.employeeID} | {row.authDateTime} | {row.authDate} | {row.authTime} | {row.deviceName} | {row.name}")
 
     test_sql()
 
