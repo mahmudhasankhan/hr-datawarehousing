@@ -28,7 +28,7 @@ def my_dag():
     @task(task_id='testsql')
     def test_sql():
         # Create a connection string variable using string interpolation.
-        connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};TrustServerCertificate=yes;'
+        connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};TrustServerCertificate=yes'
         # Use the pyodbc.connect function to connect to an SQL database.
         conn = pyodbc.connect(connectionString)
         SQL_QUERY = """
