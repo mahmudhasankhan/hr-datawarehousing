@@ -75,18 +75,29 @@ These bash commands were curated from different sources like official documentat
 
 Basically, on steps where I have found obstacles, I have solved by reading through multiple documentations and github issues. I am listing down the resources down below.
 - [Official Microsoft documentation on how to install odbc driver for linux](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16&tabs=debian18-install%2Calpine17-install%2Cdebian8-install%2Credhat7-13-install%2Crhel7-offline#18)
-- 
+- [Error debconf: unable to initialize frontend: Dialog](https://github.com/moby/moby/issues/27988) (github issue)
+- [pyodbc.OperationalError: likely because of openssl security level](https://github.com/mkleehammer/pyodbc/issues/610) (github issue)
 
 Once this docker image build is done and airflow webserver has succesfully started, docker exec into the webserver by
 ```docker
 docker exec -u root -it <container id> bash
 ```
-and verify by running 
+and verify your connection by running 
+
+```
+isql -v -k "Driver={ODBC Driver 18 for SQL Server};Server=xx;Database=xx;UID=xx;PWD=xx;TrustServerCertificate=yes"
+```
+If you put the correct credentials right, your connection should be live. You can run a simple select query to check.
+
 
 ### With Pyodbc:
 
+Connection string for pyodbc
+```
+connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};TrustServerCertificate=yes'
+```
 
-### With airflow ODBC hook
+### With ODBC hook airflow provider
 Create an ODBC Connection in airflow
 
 ```
@@ -99,7 +110,6 @@ Password = ****
 Port = 1433
 Extra = {"Driver": "ODBC Driver 18 for SQL Server", "ApplicationIntent": "ReadOnly", "TrustedConnection": "Yes", "connect_kwargs": {"autocommit": false, "ansi": true}}
 ```
-Snowflake Connections 
 ### Install dbt
 
 You need to install dbt-core and dbt-snowflake adapter in your local machine.
@@ -154,5 +164,10 @@ drop IF EXISTS warehouse hr_wh;
 drop IF EXISTS database hr_db;
 drop role IF EXISTS hr_admin_role;
 ```
+### Snowflake connection config
 
+Create a connection in airflow for snowflake
 
+```
+
+```
