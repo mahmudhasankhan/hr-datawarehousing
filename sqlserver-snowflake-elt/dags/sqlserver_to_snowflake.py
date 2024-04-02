@@ -1,6 +1,8 @@
+import pyodbc
 from airflow import DAG
 from pendulum import datetime
-from astro.sql import Table, merge
+from astro import sql as aql
+from astro.sql.table import Table
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 from airflow.providers.odbc.hooks.odbc import OdbcHook
 
@@ -13,7 +15,7 @@ def generate_create_table_sql(table):
     return f"CREATE TABLE {table} ({columns})"
 
 
-tables = ["table1", "table2", "table3"]
+tables = ["attendance"]
 
 with DAG('mssql_to_snowflake',
          start_date=datetime(2024, 3, 18),
@@ -25,7 +27,12 @@ with DAG('mssql_to_snowflake',
             snowflake_conn_id='snowflake_default',
             sql=generate_create_table_sql(table=table),
         )
-    source_table = Table(name=table, conn_id='mssql_default')
-    destination_table = Table(name=table, conn_id='snowflake_default')
 
-    upload = merge(source_table, destination_table)
+    upload = aql.merge(
+        source_table=Table(name=table, conn_id='mssql_default'),
+        target_table=Table(name=table, conn_id='snowflake_default'),
+        columns=['serialNo', 'employeeID', 'authDateTime', 'authDate', 'authTime',
+                 'direction', 'deviceName', 'deviceSerialNo', 'name', 'cardNo'],
+        target_conflict_columns=["serialNo"],
+        if_conflicts="update"
+    )

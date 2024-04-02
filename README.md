@@ -103,12 +103,20 @@ Create an ODBC Connection in airflow
 ```
 Connection id = mssql_default
 Connection Type = ODBC
-Host = server ip
-Schema = dbo
+Host = 172.16.***.***
+Schema = database 
 Login = username
 Password = ****
 Port = 1433
-Extra = {"Driver": "ODBC Driver 18 for SQL Server", "ApplicationIntent": "ReadOnly", "TrustedConnection": "Yes", "connect_kwargs": {"autocommit": false, "ansi": true}}
+Extra = {
+  "ApplicationIntent": "ReadOnly",
+  "TrustServerCertificate": "Yes",
+  "connect_kwargs": {
+    "autocommit": false,
+    "ansi": true,
+    "driver": "ODBC Driver 18 for SQL Server"
+  }
+}
 ```
 ### Install dbt
 
@@ -169,5 +177,13 @@ drop role IF EXISTS hr_admin_role;
 Create a connection in airflow for snowflake
 
 ```
-
+account: ltsdzkn-zx81788
+database: hr_db
+password: **********
+role: hr_admin_role
+schema: hr_schema
+threads: 10
+type: snowflake
+user: mahmudhasan141
+warehouse: hr_wh
 ```
