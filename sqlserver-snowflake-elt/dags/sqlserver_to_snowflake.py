@@ -1,4 +1,4 @@
-import pyodbc
+import logging
 from airflow import DAG
 from pendulum import datetime
 from astro import sql as aql
@@ -11,8 +11,12 @@ def generate_create_table_sql(table):
     odbc_hook = OdbcHook(odbc_conn_id='mssql_default')
     records = odbc_hook.get_records(
         f"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table}'")
-    columns = ', '.join([f"{row[0]} {row[1]}" for row in records])
-    return f"CREATE TABLE {table} ({columns})"
+    # logging.info(records)
+    # columns = ', '.join([f"{row[0]} {row[1]}" for row in records])
+    # columns.replace("datetime2", "datetime")
+    s = "CREATE TABLE attendance (serialNo int, employeeID nvarchar, authDateTime datetime, authDate nvarchar, authTime nvarchar, direction nvarchar, deviceName nvarchar, deviceSerialNo nvarchar, name nvarchar, cardNo nvarchar)"
+    # return f"CREATE TABLE {table} ({columns})"
+    return s
 
 
 tables = ["attendance"]
@@ -36,3 +40,4 @@ with DAG('mssql_to_snowflake',
         target_conflict_columns=["serialNo"],
         if_conflicts="update"
     )
+    create_table >> upload

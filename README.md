@@ -177,7 +177,7 @@ drop role IF EXISTS hr_admin_role;
 Create a connection in airflow for snowflake
 
 ```
-account: ltsdzkn-zx81788
+account: alwhqzt-xf04345
 database: hr_db
 password: **********
 role: hr_admin_role
