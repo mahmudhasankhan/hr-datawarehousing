@@ -1,6 +1,5 @@
 from airflow import DAG
 from pendulum import datetime
-# from astro import sql as aql
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 from airflow.providers.odbc.hooks.odbc import OdbcHook
 from airflow.providers.microsoft.mssql.operators.mssql import MsSqlOperator
@@ -57,12 +56,4 @@ with DAG('mssql_to_snowflake',
             sql=f"INSERT INTO {table} VALUES {transform.output}"
         )
 
-    # upload = aql.merge(
-    #     source_table=Table(name=table, conn_id='mssql_default'),
-    #     target_table=Table(name=table, conn_id='snowflake_default'),
-    #     columns=['serialNo', 'employeeID', 'authDateTime', 'authDate', 'authTime',
-    #              'direction', 'deviceName', 'deviceSerialNo', 'name', 'cardNo'],
-    #     target_conflict_columns=["authDateTime", "deviceSerialNo"],
-    #     if_conflicts="ignore"
-    # )
     create_table >> extract >> transform >> load
