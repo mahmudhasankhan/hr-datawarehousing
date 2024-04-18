@@ -3,3 +3,4 @@ apache-airflow-providers-odbc
 apache-airflow-providers-snowflake
 astro-sdk-python
 pyodbc==4.0.34
+apache-airflow-providers-microsoft-mssql==3.6.0
