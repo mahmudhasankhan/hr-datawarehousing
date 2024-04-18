@@ -43,7 +43,7 @@ with DAG('mssql_to_snowflake',
         extract = MsSqlOperator(
             task_id=f"extract_from_{table}",
             mssql_conn_id="mssql_default",
-            sql=f"SELECT TOP(10) serialNo, employeeID, authDateTime, authDate, authTime, direction, deviceName, deviceSerialNo, name, cardNo FROM {table}",
+            sql=f"SELECT TOP(10) serialNo, employeeID, cast(authDateTime as nvarchar) as authDateTime, authDate, authTime, direction, deviceName, deviceSerialNo, name, cardNo FROM {table}",
         )
 
         transform = PythonOperator(
