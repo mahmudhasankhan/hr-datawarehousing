@@ -29,7 +29,7 @@ def _transform_values(ti, table):
 
 tables = ["attendance"]
 
-with DAG('mssql_to_snowflake',
+with DAG('load_data_from_mssql_to_snowflake',
          start_date=datetime(2024, 3, 18),
          schedule_interval=None,
          catchup=False) as dag:
@@ -42,11 +42,11 @@ with DAG('mssql_to_snowflake',
         extract = MsSqlOperator(
             task_id=f"extract_from_{table}",
             mssql_conn_id="mssql_default",
-            sql=f"SELECT TOP(10) serialNo, employeeID, cast(authDateTime as nvarchar) as authDateTime, authDate, authTime, direction, deviceName, deviceSerialNo, name, cardNo FROM {table}",
+            sql=f"SELECT serialNo, employeeID, cast(authDateTime as nvarchar) as authDateTime, authDate, authTime, direction, deviceName, deviceSerialNo, name, cardNo FROM {table}",
         )
 
         transform = PythonOperator(
-            task_id=f"transform_values_for_table_{table}",
+            task_id=f"transform_values_for_{table}",
             python_callable=_transform_values,
             op_kwargs={'table': table}
         )

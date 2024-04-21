@@ -184,6 +184,6 @@ role: hr_admin_role
 schema: hr_schema
 threads: 10
 type: snowflake
-user: mahmudhasan141
+user: mahmudhasankhan
 warehouse: hr_wh
 ```
