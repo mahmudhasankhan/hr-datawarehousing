@@ -36,6 +36,9 @@ models:
     staging:
       +materialized: view
       snowflake_warehouse: hr_wh
+    intermediate:
+      +materialized: ephemeral
+      snowflake_warehouse: hr_wh
     marts:
       +materialized: table
       snowflake_warehouse: hr_wh
