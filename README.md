@@ -14,19 +14,18 @@ Now I want to achieve the same thing but trying modern technologies like dbt (tr
 
 Lastly visualize the data model with PowerBI.
 
-All of these jobs are to be orchestrated with airflow!
+All of these jobs are orchestrated with airflow!
 
 ### Bonus: 
 I have demonstrated here how to connect to an MSSQL database using Airflow.
 
-A lot of goes under the hood in the dockerfile to establish a stable connection between MSSQL and Airflow.
+A lot of goes under the hood in the dockerfile to establish a stable connection between MSSQL and Airflow. So anyone who is having problem connecting to a mssql database with airflow can greatly benefit from this project.
 
-In brief, installing odbc driver for sql server 18, and pyodbc in the docker image building process and 
-then connecting a mssql database through pyodbc package with the help of odbc API does the trick.
+In brief, orchestrating a set of bash commands for installing odbc driver for sql server 18, and pyodbc in a dockerfile and spinning up a docker container based on the dockerfile and finally connecting a mssql database through pyodbc package with the help of odbc API does the trick.
 
 ## Project Setup:
 
-### Setup SQL Server with Airflow
+#### Setup SQL Server with Airflow
 
 Prerequisites:
 - sql server
@@ -46,7 +45,7 @@ PASSWORD=
 DATABASE=
 
 ```
-### Install necessary dependencies for pyodbc and mssql
+#### Install necessary dependencies for pyodbc and mssql
 
 Refer to this [dockerfile](https://github.com/mahmudhasankhan/hr-datawarehousing/blob/master/sqlserver-snowflake-elt/Dockerfile).
 
@@ -89,16 +88,19 @@ isql -v -k "Driver={ODBC Driver 18 for SQL Server};Server=xx;Database=xx;UID=xx;
 ```
 If you put the correct credentials right, your connection should be live. You can run a simple select query to check.
 
+#### Pyodbc:
 
-### With Pyodbc:
-
-Connection string for pyodbc
+You can use this connection string for pyodbc in your dag to connect with a mssql server without the need of using any hooks.
 ```
 connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};TrustServerCertificate=yes'
 ```
 
-### With ODBC hook airflow provider
-Create an ODBC Connection in airflow
+Finally, run this [test dag](https://github.com/mahmudhasankhan/hr-datawarehousing/blob/master/sqlserver-snowflake-elt/dags/sqltest.py) to check everything works as it should between your MS SQL database and airflow.
+
+### Connections in Airflow
+
+#### ODBC Connection
+Create an ODBC Connection in airflow with this values.
 
 ```
 Connection id = mssql_default
@@ -118,7 +120,24 @@ Extra = {
   }
 }
 ```
-### Install dbt
+#### Snowflake Connection
+Create an Snowflake Connection in airflow with this values.
+```
+account: alwhqzt-xf04345
+database: hr_db
+password: **********
+role: hr_admin_role
+schema: hr_schema
+threads: 10
+type: snowflake
+user: mahmudhasankhan
+warehouse: hr_wh
+```
+Upon setting up these connections,[sqlserver_to_snowflake](https://github.com/mahmudhasankhan/hr-datawarehousing/blob/master/sqlserver-snowflake-elt/dags/sqlserver_to_snowflake.py) dag will be runnable.
+
+
+
+### Install & setup dbt
 
 You need to install dbt-core and dbt-snowflake adapter in your local machine.
 
@@ -128,6 +147,25 @@ pip install dbt-core \
 
 && pip install dbt-snowflake
 ```
+Configure your dbt profiles.yml file. My profiles.yml file looks like this. Fill the required credentials.
+
+```
+hr_data_pipeline:
+  outputs:
+    dev:
+      account: snowflake-account 
+      database: snowflake-database 
+      password: password 
+      role: snowflake-role 
+      schema: snowflake-schema 
+      threads: 10
+      type: snowflake
+      user: username 
+      warehouse: snowflake-warehouse 
+  target: dev
+
+```
+Then, cd into your dbt project folder and run `dbt debug`. If you've correctly configured your profiles.yml file then all checks will pass.
 ### Setup Snowflake Environment
 
 In snowflake we're gonna create a datawarehouse from where we'll visualize data later.
@@ -162,6 +200,8 @@ GRANT ROLE hr_admin_role TO USER mahmudhasan141;
     
 GRANT ALL ON DATABASE hr_db TO ROLE hr_admin_role;
 
+GRANT MANAGE GRANTS on account to role hr_admin_role;
+
 USE ROLE hr_admin_role;
 
 CREATE SCHEMA hr_db.hr_schema;
@@ -172,18 +212,9 @@ drop IF EXISTS warehouse hr_wh;
 drop IF EXISTS database hr_db;
 drop role IF EXISTS hr_admin_role;
 ```
-### Snowflake connection config
 
-Create a connection in airflow for snowflake
+### Install & Setup PowerBI
 
-```
-account: alwhqzt-xf04345
-database: hr_db
-password: **********
-role: hr_admin_role
-schema: hr_schema
-threads: 10
-type: snowflake
-user: mahmudhasankhan
-warehouse: hr_wh
-```
+Install Power BI in your machine, its a straight forward process. Then get data from snowflake
+using your snowflake account url and mentioning your datawarehouse. 
+
