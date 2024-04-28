@@ -1,5 +1,8 @@
 # HR Datawarehousing
 
+## Project Overview:
+
+
 ## Background: 
 As a data analyst, I have done Human Resource Data Warehousing with SQL Server and performed data visualization
 with PowerBI. From data warehousing to data modeling everything was done with sql server and orchestration was handled with SSIS(SQL SERVER INTEGRATION SERVICES). 
