@@ -13,6 +13,10 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/t
     && source ~/.bashrc \
     && chmod +rwx /etc/ssl/openssl.cnf \
     && sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf \
-    && sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf
+    && sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf \
+    && python -m venv dbt_venv \
+    && source dbt_venv/bin/activate \
+    && pip install --no-cache-dir dbt-snowflake protobuf==4.25.3 \
+    && deactivate
 USER airflow
 

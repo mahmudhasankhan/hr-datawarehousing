@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: hr_source 
+    database: hr_db
+    schema: hr_schema
+    tables:
+      - name: attendance
+        columns:
+          - name: name
+            tests:
+              - unique
+              - not null
+          - name: employeeid 
+            tests:
+              - unique
+              - not null
