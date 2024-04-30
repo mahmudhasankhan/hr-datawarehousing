@@ -1,6 +1,6 @@
 # HR Datawarehousing
 
-This is a data warehousing project that implements a data pipeline which extracts data from sql server and loads it into snowflake data-warehouse and performs data transformations using dbt. To orchestrate these individual workflows I have used apache airflow.
+This is a data warehousing project that implements a data pipeline which extracts human resource data from sql server and loads it into snowflake data-warehouse and performs data transformations using dbt. To orchestrate these individual workflows I have used apache airflow.
 
 Transformed data from snowflake is then used to explore the data visually through dashboards created with Power BI.
 
@@ -25,7 +25,7 @@ I have demonstrated here how to connect to an MSSQL database using Airflow.
 
 A lot of goes under the hood to establish a stable connection between MSSQL and Airflow. So for anyone who is having problem connecting to a mssql database with airflow might benefit from this project.
 
-In brief, orchestrating a set of bash commands for installing odbc driver for sql server 18, and pyodbc in a dockerfile and spinning up a docker container based on the dockerfile and finally connecting a mssql database through pyodbc package with the help of odbc API does the trick.
+In brief, orchestrating a set of bash commands for installing odbc driver for sql server 18, and pyodbc in a dockerfile and spinning up a docker container based on the dockerfile and finally connecting a mssql database through pyodbc package with the help of odbc API does the job.
 
 ## Project Architecture :
 
