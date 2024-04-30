@@ -117,7 +117,7 @@ In this case, visual dashboards are useful enough to present easily understandab
       <img src='./assets/images/snowflake.PNG' alt="Transform">
   </p>
 
-  At this stage of our project workflow, our hr data warehouse is complete. You can see that our dbt model in the marts layer has been materialized as a physical
+  At this stage of our project workflow, our mart model is ready for data analytics and reporting. You can see that our dbt model in the marts layer has been materialized as a physical
   table in our Snowflake data warehouse.
 
 
