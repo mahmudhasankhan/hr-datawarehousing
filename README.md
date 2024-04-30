@@ -1,7 +1,8 @@
 # HR Datawarehousing
 
-## Project Overview:
+This is a data warehousing project that implements a data pipeline which extracts data from sql server and loads it into snowflake data-warehouse and performs data transformations using dbt. To orchestrate these individual workflows I have used apache airflow.
 
+Transformed data from snowflake is then used to explore the data visually through dashboards created with Power BI.
 
 ## Background: 
 As a data analyst, I have done Human Resource Data Warehousing with SQL Server and performed data visualization
@@ -10,7 +11,7 @@ with PowerBI. From data warehousing to data modeling everything was done with sq
 
 Now I want to achieve the same thing but trying modern technologies like dbt (transformations), snowflake (data-warehouse) and airflow (orchestration).
 
-## Project Idea:
+### Methodology:
 - **E**xtract Data from source (sql server)
 - **L**oad data from source to Snowflake (as staging tables), and 
 - **T**ransform the loaded data into new dimensions models with dbt.
@@ -26,7 +27,118 @@ A lot of goes under the hood in the dockerfile to establish a stable connection 
 
 In brief, orchestrating a set of bash commands for installing odbc driver for sql server 18, and pyodbc in a dockerfile and spinning up a docker container based on the dockerfile and finally connecting a mssql database through pyodbc package with the help of odbc API does the trick.
 
-## Project Setup:
+## Project Architecture :
+
+<p>
+    <img src='./assets/diagram/diagram.png' alt="Architecture">
+</p>
+
+
+## ELT Flow:
+
+#### Extract & Load Data:
+
+<p>
+    <img src='./assets/images/mssql_to_snowflake.PNG' alt="Extraction & Load">
+</p>
+
+
+The data we want to extract is employee attendance data which is stored in a microsoft sql server database.
+
+This is an example of the source data we are extracting 👇
+```bash
++------------+-------------+----------------------------+-----------+-----------------+-----------+--------------------+-----------------------------------------+----------------------+--------+
+| serialNo   | employeeID  | authDateTime               | authDate  | authTime        | direction | deviceName         | deviceSerialNo                          | name                 | cardNo |
++------------+-------------+----------------------------+-----------+-----------------+-----------+--------------------+-----------------------------------------+----------------------+--------+
+| 16         | 178         | 2024-01-01 09:02:11.0000000| 2024-01-01| 09:02:11.0000000| IN        | Banani Head Office | DS-K1T342EFWX20220310V030305ENK72672522 | Tamanna Sharmin      |        |
+| 18         | 1056        | 2024-01-01 09:14:05.0000000| 2024-01-01| 09:14:05.0000000| IN        | Banani Head Office | DS-K1T342EFWX20220310V030305ENK72672522 | Sumon Al Mamun       |        |
+| 20         | 1496        | 2024-01-01 09:15:26.0000000| 2024-01-01| 09:15:26.0000000| IN        | Banani Head Office | DS-K1T342EFWX20220310V030305ENK72672522 | Md. Samin Hyder      |        |
+| 22         | 1362        | 2024-01-01 09:16:43.0000000| 2024-01-01| 09:16:43.0000000| IN        | Banani Head Office | DS-K1T342EFWX20220310V030305ENK72672522 | Md. Shamim Molla     |        |
+| 24         | 1485        | 2024-01-01 09:20:51.0000000| 2024-01-01| 09:20:51.0000000| IN        | Banani Head Office | DS-K1T342EFWX20220310V030305ENK72672522 | Md. Monjurul Hossain |        |
++------------+-------------+----------------------------+-----------+-----------------+-----------+--------------------+-----------------------------------------+----------------------+--------+
+```
+An airflow dag is responsible for extracting data from source data, performing minor transformations such as type casting and loading it into a snowflake data warehouse.
+
+First it creates a table having the same schema as its source table and then, begins the extraction job.
+
+
+#### Transform Data:
+As we progress through our ELT flow, for transformations there's another airflow dag which is responsible for running several dbt transformation jobs.
+The dbt ``hr_data_pipeline`` project is structured like this 👇
+
+
+    .
+    ├── analyses                  
+    ├── macros
+    │   └── elapsed_time.sql
+    ├── models
+    │   ├── intermediate
+    │   │   ├── int_employees_aggregated_to_entry_time.sql
+    │   │   └── int_employees_aggregated_to_out_time.sql
+    │   ├── marts
+    │   │   └── fct_attendance.sql
+    │   └── staging
+    │       ├── sources.yml
+    │       └── stg_hr_attendance.sql
+    │ 
+    ├── seeds                    
+    ├── snapshots 
+    ├── tests 
+    ├── dbt_project.yml 
+    └── README.md
+
+##### Dbt workflow:
+
+<p>
+    <img src='./assets/images/dbt_dag.PNG' alt="Transform">
+</p>
+
+
+- Staging layer contains models which mirrors the recently loaded table in snowflake with minor model transformations such as renaming columns.
+The staging layer serves as our foundation.
+- Once our foundation is set up, we do purpose-built model transformations such as aggregating and grouping employee data.
+These intermediate models are materialized ephemerally to keep our data warehouse minimal and less cluttered. 
+- Our mart model brings intermediate models together by joining them into business-defined entities. This layers serves a specific entity like employee attendance results, their entry time and out time for the **Human Resource** Department.
+Models in the marts layer are always materialized as tables for faster querying for reporting. 
+
+## Business Intelligence
+
+It is important to understand that, a data warehouse in essence is a data management system specifically designed to enable and support 
+business intelligence (BI) activities, especially analytics.
+
+To derive valuable business insights from this data to help take data-driven decisions. 
+
+In this case, visual dashboards are useful enough to present easily understandable data analysis to stakeholders such as hr executives of a company. 
+
+
+##### BI workflow:
+- Snowflake data warehouse:
+  <p>
+      <img src='./assets/images/snowflake.PNG' alt="Transform">
+  </p>
+
+  At this stage of our project workflow, our hr data warehouse is complete. You can see that our dbt model in the marts layer has been materialized as a physical
+  table in our Snowflake data warehouse.
+
+
+- Purpose-built Dashboards:
+  
+  <p>
+      <img src='./assets/images/department_wise_att.PNG' alt="Transform">
+  </p>
+
+  Such as displaying a bird's eye view of the employee data to understand which department is doing well in terms of on time and late attendance.
+  Users can also customize his/her reports by filtering date range and departments.
+  
+  <p>
+      <img src='./assets/images/hours_worked.PNG' alt="Transform">
+  </p>
+  On the other hand, this interactive dashboard will be useful to understand how many hours an employee of a particular department has worked for a specific range of time.
+
+
+
+
+## Environment Setup:
 
 #### Setup SQL Server with Airflow
 
