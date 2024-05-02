@@ -90,7 +90,7 @@ The dbt ``hr_data_pipeline`` project is structured like this 👇
 ##### Dbt workflow:
 
 <p>
-    <img src='./assets/images/dbt_dag.PNG' alt="Transform">
+    <img src='./assets/images/dbt_dag.PNG' alt="dbt transform">
 </p>
 
 
@@ -114,7 +114,7 @@ In this case, visual dashboards are useful enough to present easily understandab
 ##### BI workflow:
 - Snowflake data warehouse:
   <p>
-      <img src='./assets/images/snowflake.PNG' alt="Transform">
+      <img src='./assets/images/snowflake.PNG' alt="Snowflake">
   </p>
 
   At this stage of our project workflow, our hr data warehouse is complete. You can see that our dbt model in the marts layer has been materialized as a physical
@@ -124,17 +124,24 @@ In this case, visual dashboards are useful enough to present easily understandab
 - Purpose-built Dashboards:
   
   <p>
-      <img src='./assets/images/department_wise_att.PNG' alt="Transform">
+      <img src='./assets/images/department_wise_att.PNG' alt="Department wise attendance">
   </p>
 
   Such as displaying a bird's eye view of the employee data to understand which department is doing well in terms of on time and late attendance.
   Users can also customize his/her reports by filtering date range and departments.
   
   <p>
-      <img src='./assets/images/hours_worked.PNG' alt="Transform">
+      <img src='./assets/images/hours_worked.PNG' alt="Hours Worked">
   </p>
+  
   On the other hand, this interactive dashboard will be useful to understand how many hours an employee of a particular department has worked for a specific range of time.
 
+
+  <p>
+      <img src='./assets/images/dataset.PNG' alt="dataset">
+  </p>
+  
+  Finally, this is a report dashboard containing every bit of information necessary to asses an employee's attendance record in a tabular format.
 
 
 
