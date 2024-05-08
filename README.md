@@ -138,7 +138,7 @@ In this case, visual dashboards are useful enough to present easily understandab
 
 
   <p>
-      <img src='./assets/images/dataset.PNG' alt="dataset">
+      <img src='./assets/images/attendance_dataset.PNG' alt="dataset">
   </p>
   
   Finally, this is a report dashboard containing every bit of information necessary to asses an employee's attendance record in a tabular format.
